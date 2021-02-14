@@ -1,0 +1,17 @@
+[package]
+name = "async-file-lock"
+version = "0.1.0"
+authors = ["Stock84-dev <leontk8@gmail.com>"]
+edition = "2018"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+tokio = { version = "0.2", features = ["fs", "blocking", "rt-core"] }
+fs3 = "0.5.0"
+futures-lite = "1.11.3"
+
+[dev-dependencies]
+tokio = { version = "0.2", features = ["macros"] }
+fork = "0.1.18"
+tempfile = "3.2.0"
