@@ -1,4 +1,6 @@
 # async-file-lock
+[![version]][crate] [![downloads]][crate] [![docs]][docsrs] [![licence]][licence_link]
+
 Asynchronous file lock that can auto lock and auto seek.
 
 # Features
@@ -48,3 +50,10 @@ string.clear();
 file.read_to_string(&mut string).await?;
 assert_eq!(string, "abc");
 ```
+[crate]: https://crates.io/crates/async-file-lock
+[version]: https://img.shields.io/crates/v/async-file-lock
+[downloads]: https://img.shields.io/crates/d/async-file-lock
+[docs]: https://docs.rs/mio/badge.svg
+[docsrs]: https://docs.rs/async-file-lock
+[licence]: https://img.shields.io/crates/l/async-file-lock
+[licence_link]: https://github.com/Stock84-dev/async-file-lock/blob/main/LICENSE
