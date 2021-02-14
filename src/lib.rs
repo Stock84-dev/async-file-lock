@@ -267,7 +267,7 @@ impl FileLock {
                     UnlockFuture::new(self);
                 }
                 Some(fut) => {
-                    println!("unlocking");
+                    // println!("unlocking");
                     let file = ready!(fut.poll(cx));
                     let result = file.unlock();
                     self.unlocked_file = Some(file);
@@ -279,7 +279,7 @@ impl FileLock {
                     }
                     self.state = State::Unlocked;
                     self.unlocking_fut.take();
-                    println!("unlocked");
+                    // println!("unlocked");
                     return Poll::Ready(());
                 }
             }
@@ -325,9 +325,9 @@ macro_rules! poll_loop {
                     }
                 },
                 State::Working => {
-                    println!("working");
+                    // println!("working");
                     $working
-                    println!("worked");
+                    // println!("worked");
                 },
                 State::Locking => {
                     if let Err(e) = ready!($self.$lock($cx)) {
@@ -354,7 +354,7 @@ impl AsyncWrite for FileLock {
                 let result = ready!(Pin::new(self.locked_file.as_mut().unwrap())
                         .as_mut()
                         .poll_write(cx, buf));
-                println!("written {:?}", &buf[..*result.as_ref().unwrap()]);
+                // println!("written {:?}", &buf[..*result.as_ref().unwrap()]);
                 if self.is_manually_locked {
                     self.state = State::Locked;
                     return Poll::Ready(result);
@@ -373,13 +373,13 @@ impl AsyncWrite for FileLock {
     }
 
     fn poll_flush(mut self: Pin<&mut Self>, cx: &mut Context<'_>) -> Poll<Result<()>> {
-        println!("flushing");
+        // println!("flushing");
         poll_loop! {self, cx, |_| (), poll_exclusive_lock,
             State::Working => {
                 let result = ready!(Pin::new(self.locked_file.as_mut().unwrap())
                         .as_mut()
                         .poll_flush(cx));
-                println!("flushed");
+                // println!("flushed");
                 if self.is_manually_locked {
                     self.state = State::Locked;
                     return Poll::Ready(result);
@@ -392,14 +392,14 @@ impl AsyncWrite for FileLock {
             //     let result = ready!(Pin::new(self.locked_file.as_mut().unwrap())
             //             .as_mut()
             //             .poll_flush(cx));
-            //     println!("flushed");
+            //     // println!("flushed");
             //     return Poll::Ready(result);
             // }
         };
     }
 
     fn poll_shutdown(self: Pin<&mut Self>, _cx: &mut Context<'_>) -> Poll<Result<()>> {
-        println!("shutting down");
+        // println!("shutting down");
         // We don't have to do anything as files are unlocked when underlying tokio file reports
         // some progress. Looking at implementation of shutdown for `tokio::fs::File` says that it
         // does nothing.
@@ -492,28 +492,28 @@ pub struct LockFuture<'a> {
 
 impl<'a> LockFuture<'a> {
     fn new_exclusive(file_lock: &'a mut FileLock) -> LockFuture<'a> {
-        println!("locking exclusive");
+        // println!("locking exclusive");
         let unlocked_file = file_lock.unlocked_file.take().unwrap();
         file_lock.locking_fut = Some(spawn_blocking(move || {
             let result = match unlocked_file.lock_exclusive() {
                 Ok(_) => Ok(File::from_std(unlocked_file)),
                 Err(e) => Err((unlocked_file, e)),
             };
-            println!("locked exclusive");
+            // println!("locked exclusive");
             result
         }));
         LockFuture { file_lock }
     }
 
     fn new_shared(file_lock: &'a mut FileLock) -> LockFuture<'a> {
-        println!("locking shared");
+        // println!("locking shared");
         let unlocked_file = file_lock.unlocked_file.take().unwrap();
         file_lock.locking_fut = Some(spawn_blocking(move || {
             let result = match unlocked_file.lock_shared() {
                 Ok(_) => Ok(File::from_std(unlocked_file)),
                 Err(e) => Err((unlocked_file, e)),
             };
-            println!("locked shared");
+            // println!("locked shared");
             result
         }));
         LockFuture { file_lock }
