@@ -33,7 +33,7 @@ pub struct FileLock {
     locked_file: Option<File>,
     result: Option<Result<u64>>,
     locking_fut: Option<JoinHandle<std::result::Result<File, (std::fs::File, Error)>>>,
-    unlocking_fut: Option<Pin<Box<dyn Future<Output = std::fs::File>>>>,
+    unlocking_fut: Option<Pin<Box<dyn Future<Output = std::fs::File> + Send>>>,
     seek_fut: Option<JoinHandle<(Result<u64>, std::fs::File)>>,
 }
 
