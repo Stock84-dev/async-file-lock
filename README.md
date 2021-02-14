@@ -10,7 +10,7 @@ Asynchronous file lock that can auto lock and auto seek.
 # Platforms
 async-file-lock should work on any platform supported by libc.
 
-# example
+# Example
 ```rust
 use async_file_lock::FileLock;
 use tokio::io::{AsyncWriteExt, SeekFrom, AsyncSeekExt, AsyncReadExt};
