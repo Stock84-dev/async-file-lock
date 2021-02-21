@@ -271,11 +271,8 @@ impl FileLock {
                     let file = ready!(fut.poll(cx));
                     let result = file.unlock();
                     self.unlocked_file = Some(file);
-                    match self.result {
-                        None => self.result = Some(result.map(|_| 0)),
-                        Some(_) => if let Err(e) = result {
-                                self.result = Some(Err(e));
-                            }
+                    if let Err(e) = result {
+                        self.result = Some(Err(e));
                     }
                     self.state = State::Unlocked;
                     self.unlocking_fut.take();
