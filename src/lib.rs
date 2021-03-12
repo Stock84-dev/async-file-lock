@@ -15,6 +15,7 @@ use tokio::task::{spawn_blocking, JoinHandle};
 use futures_lite::{ready, FutureExt};
 use fs3::FileExt;
 use std::path::Path;
+use std::mem::MaybeUninit;
 
 /// Locks a file asynchronously.
 /// Auto locks a file if any read or write methods are called. If [Self::lock_exclusive]
@@ -405,6 +406,10 @@ impl AsyncWrite for FileLock {
 }
 
 impl AsyncRead for FileLock {
+    unsafe fn prepare_uninitialized_buffer(&self, _: &mut [MaybeUninit<u8>]) -> bool {
+        false
+    }
+
     fn poll_read(
         mut self: Pin<&mut Self>,
         cx: &mut Context<'_>,
